@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы WB - Нижневартовск</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f5; margin: 0; padding: 0; display: flex; justify-content: center; }
+        .mobile-container { width: 100%; max-width: 414px; background-color: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding-bottom: 80px; }
+        .header { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+        .wb-logo { background: linear-gradient(135deg, #cb11ab, #7b00ff); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; margin-right: 15px; font-family: Arial, sans-serif; font-style: italic; }
+        .header-title { font-size: 18px; font-weight: bold; color: #333; }
+        .page-title { padding: 20px 15px 10px; font-size: 22px; font-weight: bold; color: #333; }
+        .review-form { padding: 0 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #666; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #f9f9f9; outline: none; }
+        .form-control:focus { border-color: #cb11ab; background-color: #fff; }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+        .stars-container { display: flex; gap: 5px; font-size: 30px; cursor: pointer; color: #ccc; }
+        .star.active { color: #ffcc00; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #cb11ab, #7b00ff); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:active { opacity: 0.8; }
+        .footer-legal { margin-top: 40px; padding: 20px 15px; background-color: #f9f9f9; color: #999; font-size: 11px; line-height: 1.4; border-top: 1px solid #eee; text-align: center; }
+        .footer-legal p { margin: 5px 0; }
+        .toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 15px; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+        .toast.show { visibility: visible; opacity: 1; bottom: 100px; }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    <div class="header">
+        <div class="wb-logo">wb</div>
+        <div class="header-title">Отзывы покупателей</div>
+    </div>
+
+    <div class="page-title">Пункт выдачи: Нижневартовск</div>
+
+    <div class="review-form">
+        <div class="form-group">
+            <label for="city">Выберите ПВЗ (Город Нижневартовск):</label>
+            <select id="city" class="form-control">
+                <option>ул. Интернациональная, д. 2г, Корпус 2</option>
+                <option>ул. Ленина, д. 15 (Центральный)</option>
+                <option>ул. Мира, д. 45 (ТЦ "Европа")</option>
+                <option>ул. Чапаева, д. 10</option>
+                <option>пр. Победы, д. 22</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Ваша оценка работы ПВЗ:</label>
+            <div class="stars-container" id="star-rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="rating-value" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Комментарий:</label>
+            <textarea id="comment" class="form-control" placeholder="Напишите, как прошло получение товара..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitReview()">Оставить отзыв</button>
+    </div>
+
+    <div id="toast" class="toast">Спасибо! Ваш отзыв отправлен.</div>
+
+    <div class="footer-legal">
+        <p><strong>ООО «Вайлдберриз»</strong></p>
+        <p>Юридический адрес: 142715, Московская область, Ленинский район, д. Мильково, строение 1/2</p>
+        <p>ИНН: 7731375503, ОГРН: 1067746062449</p>
+        <p>© 2004–2024 Wildberries. Все права защищены.</p>
+    </div>
+</div>
+
+<script>
+    const stars = document.querySelectorAll('.star');
+    const ratingValue = document.getElementById('rating-value');
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = star.getAttribute('data-value');
+            ratingValue.value = value;
+            stars.forEach(s => s.classList.remove('active'));
+            for(let i = 0; i < value; i++) {
+                stars[i].classList.add('active');
+            }
+        });
+    });
+
+    function submitReview() {
+        const city = document.getElementById('city').value;
+        const rating = document.getElementById('rating-value').value;
+        const comment = document.getElementById('comment').value;
+
+        if (rating === "0") {
+            alert("Пожалуйста, поставьте оценку (звезды).");
+            return;
+        }
+        if (comment.trim() === "") {
+            alert("Пожалуйста, напишите комментарий.");
+            return;
+        }
+
+        // === НАСТРОЙКИ TELEGRAM ===
+        const botToken = '8952031568:AAGhNVqTJ76vedw3KDn9Nl0d-1f6iFyaAO0';
+        const chatId = '5778859190'; // Ваш Chat ID
+        // ==========================
+
+        const messageText = `📦 *Новый отзыв WB!*\n\n🏬 *ПВЗ:* ${city}\n⭐ *Оценка:* ${rating}/5\n💬 *Комментарий:* ${comment}`;
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: messageText,
+                parse_mode: 'Markdown'
+            }),
+        })
+        .then(response => {
+            if (response.ok) {
+                const toast = document.getElementById("toast");
+                toast.className = "toast show";
+                
+                document.getElementById('comment').value = "";
+                document.getElementById('rating-value').value = "0";
+                stars.forEach(s => s.classList.remove('active'));
+
+                setTimeout(function(){ 
+                    toast.className = toast.className.replace("show", ""); 
+                }, 3000);
+            } else {
+                alert("Ошибка при отправке. Убедитесь, что ваш ID верный и вы нажали Start у бота.");
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert("Ошибка сети. Проверьте интернет.");
+        });
+    }
+</script>
+
+</body>
+</html>
